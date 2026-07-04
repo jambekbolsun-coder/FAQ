@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Александр &amp; Екатерина — Приглашение на свадьбу</title>
+<meta name="description" content="С любовью приглашаем вас разделить самый счастливый день нашей жизни — 15 августа 2027 года.">
+
+<!-- ============================================================
+     ШРИФТЫ
+     Cormorant Garamond — дисплейный serif для эмоциональных акцентов
+     Jost — геометрический sans для интерфейсных элементов
+     Great Vibes — каллиграфический шрифт для подписи-вензеля
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     ЗАСТАВКА (LOADER)
+     Вензель из инициалов "А & Е" рисуется линией, затем растворяется
+     ============================================================ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__aura"></div>
+  <svg class="loader__monogram" viewBox="0 0 240 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Декоративная рамка-вензель -->
+    <path class="loader__frame" d="M120 12 C60 12 18 54 18 100 C18 146 60 188 120 188 C180 188 222 146 222 100 C222 54 180 12 120 12" stroke="url(#loaderGoldGrad)" stroke-width="1" stroke-linecap="round"/>
+    <!-- Буква А -->
+    <path class="loader__letter loader__letter--a" d="M78 130 L100 62 L122 130 M86 108 L114 108" stroke="url(#loaderGoldGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Амперсанд-сердце по центру -->
+    <path class="loader__heart" d="M120 96 C116 88 106 88 103 96 C100 104 108 110 120 122 C132 110 140 104 137 96 C134 88 124 88 120 96 Z" fill="url(#loaderGoldGrad)"/>
+    <!-- Буква Е -->
+    <path class="loader__letter loader__letter--e" d="M140 66 L140 130 M140 66 L164 66 M140 98 L160 98 M140 130 L164 130" stroke="url(#loaderGoldGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <defs>
+      <linearGradient id="loaderGoldGrad" x1="18" y1="12" x2="222" y2="188" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#E8D4A8"/>
+        <stop offset="0.5" stop-color="#C9A876"/>
+        <stop offset="1" stop-color="#B8935F"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <p class="loader__caption">пятнадцатое августа</p>
+</div>
+
+<!-- ============================================================
+     ФОНОВЫЕ АТМОСФЕРНЫЕ ЭФФЕКТЫ (глобальные, position: fixed)
+     Лепестки, сердечки, частицы — рендерятся через JS
+     ============================================================ -->
+<div class="atmosphere" id="atmosphere" aria-hidden="true">
+  <div class="atmosphere__glow atmosphere__glow--1"></div>
+  <div class="atmosphere__glow atmosphere__glow--2"></div>
+  <div class="atmosphere__glow atmosphere__glow--3"></div>
+</div>
+<div class="petals-layer" id="petalsLayer" aria-hidden="true"></div>
+<div class="hearts-layer" id="heartsLayer" aria-hidden="true"></div>
+
+<!-- Кастомный курсор -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- Прогресс-бар прочтения страницы -->
+<div class="progress-bar" id="progressBar" aria-hidden="true"><span class="progress-bar__fill" id="progressBarFill"></span></div>
+
+<!-- ============================================================
+     НАВИГАЦИЯ
+     ============================================================ -->
+<nav class="nav" id="mainNav">
+  <a href="#hero" class="nav__logo" aria-label="На главную">А<span class="nav__logo-amp">&amp;</span>Е</a>
+  <button class="nav__burger" id="navBurger" aria-label="Открыть меню" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav__list" id="navList">
+    <li><a href="#story" class="nav__link" data-section="story">История</a></li>
+    <li><a href="#countdown" class="nav__link" data-section="countdown">Обратный отсчёт</a></li>
+    <li><a href="#schedule" class="nav__link" data-section="schedule">Программа</a></li>
+    <li><a href="#location" class="nav__link" data-section="location">Локация</a></li>
+    <li><a href="#gallery" class="nav__link" data-section="gallery">Галерея</a></li>
+    <li><a href="#dresscode" class="nav__link" data-section="dresscode">Дресс-код</a></li>
+    <li><a href="#faq" class="nav__link" data-section="faq">Вопросы</a></li>
+    <li><a href="#rsvp" class="nav__link nav__link--cta" data-section="rsvp">Подтвердить визит</a></li>
+  </ul>
+</nav>
+
+<!-- Кнопка управления музыкой -->
+<button class="music-toggle" id="musicToggle" aria-label="Включить музыку" aria-pressed="false">
+  <svg class="music-toggle__icon music-toggle__icon--play" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+  <svg class="music-toggle__icon music-toggle__icon--pause" viewBox="0 0 24 24" fill="none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+  <span class="music-toggle__ring"></span>
+</button>
+<audio id="bgMusic" loop preload="none">
+  <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+</audio>
+
+<main id="mainContent">
+
+  <!-- ============================================================
+       HERO — ЭКРАН ПРИВЕТСТВИЯ
+       ============================================================ -->
+  <section class="hero" id="hero">
+    <div class="hero__image-wrap">
+      <div class="hero__image" style="background-image:url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop')"></div>
+      <div class="hero__overlay"></div>
+    </div>
+
+    <div class="hero__ornament hero__ornament--top" aria-hidden="true">
+      <svg viewBox="0 0 200 60" fill="none"><path d="M2 30 C50 5 60 55 100 30 C140 5 150 55 198 30" stroke="url(#heroLineGrad)" stroke-width="1"/><defs><linearGradient id="heroLineGrad" x1="0" y1="0" x2="200" y2="0"><stop offset="0" stop-color="#C9A876" stop-opacity="0"/><stop offset="0.5" stop-color="#C9A876"/><stop offset="1" stop-color="#C9A876" stop-opacity="0"/></linearGradient></defs></svg>
+    </div>
+
+    <div class="hero__content">
+      <p class="hero__eyebrow reveal-word" data-reveal>Приглашение на свадьбу</p>
+      <h1 class="hero__names">
+        <span class="hero__name reveal-letters" data-reveal-letters>Александр</span>
+        <span class="hero__heart" aria-hidden="true">
+          <svg viewBox="0 0 48 44" fill="none"><path d="M24 40 C24 40 4 26 4 13 C4 5 10 1 16 1 C20 1 23 3 24 7 C25 3 28 1 32 1 C38 1 44 5 44 13 C44 26 24 40 24 40Z" fill="url(#heroHeartGrad)"/><defs><linearGradient id="heroHeartGrad" x1="4" y1="1" x2="44" y2="40"><stop stop-color="#E8B4B8"/><stop offset="1" stop-color="#C9A876"/></linearGradient></defs></svg>
+        </span>
+        <span class="hero__name reveal-letters" data-reveal-letters>Екатерина</span>
+      </h1>
+      <p class="hero__message reveal-word" data-reveal>С любовью приглашаем вас разделить<br>самый счастливый день нашей жизни</p>
+
+      <div class="hero__date-block">
+        <span class="hero__date-line" aria-hidden="true"></span>
+        <span class="hero__date">15 августа 2027</span>
+        <span class="hero__date-line" aria-hidden="true"></span>
+      </div>
+
+      <button class="btn btn--primary btn--magnetic hero__cta" id="openInvitation" data-magnetic>
+        <span class="btn__label">Открыть приглашение</span>
+        <span class="btn__shine" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="hero__scroll-hint" aria-hidden="true">
+      <span class="hero__scroll-line"></span>
+      <span class="hero__scroll-text">Листайте вниз</span>
+    </div>
+  </section>
+
+  <!-- Волнистый разделитель -->
+  <div class="divider divider--wave-1" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,32 C960,64 1200,16 1440,40 L1440,80 L0,80 Z" fill="var(--color-surface)"/></svg></div>
+
+  <!-- ============================================================
+       ЦИТАТА О ЛЮБВИ №1
+       ============================================================ -->
+  <section class="quote-block reveal-on-scroll" data-reveal-block>
+    <svg class="quote-block__mark" viewBox="0 0 60 44" aria-hidden="true"><path d="M0 24C0 10 9 0 22 0V8C14 8 9 13 9 21H22V44H0V24ZM33 24C33 10 42 0 55 0V8C47 8 42 13 42 21H55V44H33V24Z" fill="var(--color-gold)"/></svg>
+    <p class="quote-block__text">Любовь — это не то, что находишь.<br>Любовь — это то, что находит тебя.</p>
+    <span class="quote-block__divider" aria-hidden="true"></span>
+  </section>
+
+  <!-- ============================================================
+       ИСТОРИЯ ЛЮБВИ — TIMELINE
+       ============================================================ -->
+  <section class="story" id="story">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Наш путь</span>
+      <h2 class="section-header__title">История любви</h2>
+      <p class="section-header__subtitle">Каждая пара пишет свою собственную сказку.<br>Вот несколько глав нашей.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline__line" aria-hidden="true"><span class="timeline__line-fill" id="timelineFill"></span></div>
+
+      <article class="timeline__item timeline__item--left reveal-on-scroll" data-reveal-block>
+        <div class="timeline__marker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.5 3 12 4.5 12 4.5C12 4.5 13.5 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="currentColor"/></svg></div>
+        <div class="timeline__card glass-card">
+          <span class="timeline__date">Июнь 2021</span>
+          <h3 class="timeline__title">Первая встреча</h3>
+          <p class="timeline__text">Случайная встреча общих друзей на летней террасе переросла в разговор, который длился до рассвета. Мы оба знали — это начало чего-то важного.</p>
+        </div>
+      </article>
+
+      <article class="timeline__item timeline__item--right reveal-on-scroll" data-reveal-block>
+        <div class="timeline__marker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M21 8V21H3V8L12 3L21 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 21V14H15V21" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="timeline__card glass-card">
+          <span class="timeline__date">Февраль 2022</span>
+          <h3 class="timeline__title">Первое сообщение</h3>
+          <p class="timeline__text">«Привет! Не могу перестать думать о нашем разговоре» — так начиналась переписка, growing into a daily ritual we couldn't imagine our days without.</p>
+        </div>
+      </article>
+
+      <article class="timeline__item timeline__item--left reveal-on-scroll" data-reveal-block>
+        <div class="timeline__marker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9L16 13.5L17.5 20L12 16.5L6.5 20L8 13.5L3 9L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="timeline__card glass-card">
+          <span class="timeline__date">Сентябрь 2022</span>
+          <h3 class="timeline__title">Первое путешествие</h3>
+          <p class="timeline__text">Десять дней вдоль побережья, потерянные карты, случайные закаты и уверенность, что с этим человеком любая дорога — правильная.</p>
+        </div>
+      </article>
+
+      <article class="timeline__item timeline__item--right reveal-on-scroll" data-reveal-block>
+        <div class="timeline__marker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="9" ry="6" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg></div>
+        <div class="timeline__card glass-card">
+          <span class="timeline__date">Декабрь 2024</span>
+          <h3 class="timeline__title">Предложение</h3>
+          <p class="timeline__text">Заснеженный вечер, свет гирлянд и одно колено на мостовой. Дальше — только «да», сказанное сквозь смех и слёзы одновременно.</p>
+        </div>
+      </article>
+
+      <article class="timeline__item timeline__item--left timeline__item--final reveal-on-scroll" data-reveal-block>
+        <div class="timeline__marker timeline__marker--final" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.5 3 12 4.5 12 4.5C12 4.5 13.5 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="currentColor"/></svg></div>
+        <div class="timeline__card glass-card timeline__card--final">
+          <span class="timeline__date">15 августа 2027</span>
+          <h3 class="timeline__title">Свадьба</h3>
+          <p class="timeline__text">Глава, которую мы напишем вместе со всеми, кого любим. Спасибо, что будете частью этого дня.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ИСТОРИЯ ПРЕДЛОЖЕНИЯ (расширенный блок с фото)
+       ============================================================ -->
+  <section class="proposal reveal-on-scroll" data-reveal-block>
+    <div class="proposal__media">
+      <div class="proposal__image" style="background-image:url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1200&auto=format&fit=crop')"></div>
+      <div class="proposal__ring" aria-hidden="true">
+        <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="62" r="30" stroke="url(#ringGrad)" stroke-width="4"/><path d="M50 32 L38 14 L62 14 Z" fill="url(#ringGrad)"/><circle cx="50" cy="16" r="5" fill="#fff" opacity="0.9"/><defs><linearGradient id="ringGrad" x1="20" y1="14" x2="80" y2="92"><stop stop-color="#E8D4A8"/><stop offset="1" stop-color="#B8935F"/></linearGradient></defs></svg>
+      </div>
+    </div>
+    <div class="proposal__content">
+      <span class="section-header__eyebrow">Момент "да"</span>
+      <h2 class="proposal__title">История предложения</h2>
+      <p class="proposal__text">Это был обычный вечер — так казалось. Прогулка вдоль набережной, тихий разговор о будущем. Александр остановился у старого фонаря, достал маленькую коробочку, и вдруг время замедлилось. «Я хочу проживать все обычные вечера моей жизни рядом с тобой», — сказал он. Ответ пришёл раньше, чем закончился вопрос.</p>
+      <p class="proposal__signature">— Екатерина, вспоминая тот вечер</p>
+    </div>
+  </section>
+
+  <div class="divider divider--wave-2" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,0 480,80 720,48 C960,16 1200,64 1440,40 L1440,0 L0,0 Z" fill="var(--color-cream)"/></svg></div>
+
+  <!-- ============================================================
+       COUNTDOWN
+       ============================================================ -->
+  <section class="countdown" id="countdown">
+    <div class="countdown__ornament" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.5 3 12 4.5 12 4.5C12 4.5 13.5 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="currentColor"/></svg>
+    </div>
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Уже совсем скоро</span>
+      <h2 class="section-header__title section-header__title--light">До нашего дня осталось</h2>
+    </div>
+
+    <div class="countdown__grid" id="countdownGrid">
+      <div class="countdown__unit glass-card">
+        <span class="countdown__value" id="cdDays">000</span>
+        <span class="countdown__label">Дней</span>
+      </div>
+      <div class="countdown__unit glass-card">
+        <span class="countdown__value" id="cdHours">00</span>
+        <span class="countdown__label">Часов</span>
+      </div>
+      <div class="countdown__unit glass-card">
+        <span class="countdown__value" id="cdMinutes">00</span>
+        <span class="countdown__label">Минут</span>
+      </div>
+      <div class="countdown__unit glass-card">
+        <span class="countdown__value" id="cdSeconds">00</span>
+        <span class="countdown__label">Секунд</span>
+      </div>
+    </div>
+
+    <button class="btn btn--ghost countdown__calendar-btn" id="addToCalendar" data-magnetic>
+      <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M7 2v3M17 2v3M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2Z" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>Добавить в календарь</span>
+    </button>
+  </section>
+
+  <!-- ============================================================
+       ПРОГРАММА ДНЯ
+       ============================================================ -->
+  <section class="schedule" id="schedule">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Расписание торжества</span>
+      <h2 class="section-header__title">Программа дня</h2>
+      <p class="section-header__subtitle">От первого тоста до последнего танца — каждый час этого дня продуман с любовью.</p>
+    </div>
+
+    <div class="schedule__grid">
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:0">
+        <span class="schedule__time">16:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M6 8l6-4 6 4M4 20h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3 class="schedule__title">Сбор гостей</h3>
+        <p class="schedule__text">Приветственные напитки и живая музыка в саду</p>
+      </article>
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:1">
+        <span class="schedule__time">17:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.5 3 12 4.5 12 4.5C12 4.5 13.5 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="currentColor"/></svg></div>
+        <h3 class="schedule__title">Церемония</h3>
+        <p class="schedule__text">Выездная регистрация под открытым небом</p>
+      </article>
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:2">
+        <span class="schedule__time">18:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 10h16l-1.5 9a2 2 0 01-2 1.7H7.5a2 2 0 01-2-1.7L4 10Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 10a4 4 0 018 0" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3 class="schedule__title">Банкет</h3>
+        <p class="schedule__text">Праздничный ужин и тёплые тосты от близких</p>
+      </article>
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:3">
+        <span class="schedule__time">20:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3 class="schedule__title">Первый танец</h3>
+        <p class="schedule__text">Наш самый личный момент этого вечера</p>
+      </article>
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:4">
+        <span class="schedule__time">22:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20h16M6 20V11a6 6 0 0112 0v9" stroke="currentColor" stroke-width="1.5"/><path d="M9 20v-4M15 20v-4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3 class="schedule__title">Торт</h3>
+        <p class="schedule__text">Сладкий момент и десертный стол</p>
+      </article>
+      <article class="schedule__card glass-card reveal-on-scroll" data-reveal-block style="--delay:5">
+        <span class="schedule__time">23:00</span>
+        <div class="schedule__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M19 5l-4 4M9 15l-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3 class="schedule__title">Фейерверк</h3>
+        <p class="schedule__text">Яркое завершение самого счастливого дня</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="divider divider--wave-1" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,32 C960,64 1200,16 1440,40 L1440,80 L0,80 Z" fill="var(--color-surface)"/></svg></div>
+
+  <!-- ============================================================
+       ЛОКАЦИЯ
+       ============================================================ -->
+  <section class="location" id="location">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Место торжества</span>
+      <h2 class="section-header__title">Локация</h2>
+    </div>
+
+    <div class="location__grid">
+      <div class="location__info glass-card reveal-on-scroll" data-reveal-block>
+        <h3 class="location__venue">Royal Palace</h3>
+        <p class="location__address">
+          <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          ул. Абдрахманова 120, Бишкек
+        </p>
+        <p class="location__phone">
+          <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M6 2h3l2 5-2.5 1.5a11 11 0 005 5L15 11l5 2v3a2 2 0 01-2 2C10 18 4 12 4 4a2 2 0 012-2Z" stroke="currentColor" stroke-width="1.5"/></svg>
+          +996 700 123 456
+        </p>
+        <div class="location__meta">
+          <div class="location__meta-item">
+            <span class="location__meta-label">Парковка</span>
+            <span class="location__meta-value">Бесплатная, при входе</span>
+          </div>
+          <div class="location__meta-item">
+            <span class="location__meta-label">Ближайший отель</span>
+            <span class="location__meta-value">Hyatt Regency, 5 мин</span>
+          </div>
+        </div>
+        <a class="btn btn--primary" id="routeBtn" href="https://www.google.com/maps/search/?api=1&query=42.8746,74.6122" target="_blank" rel="noopener" data-magnetic>
+          <span class="btn__label">Построить маршрут</span>
+          <span class="btn__shine" aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div class="location__map reveal-on-scroll" data-reveal-block>
+        <iframe
+          class="location__map-frame"
+          title="Карта расположения Royal Palace"
+          src="https://www.google.com/maps?q=42.8746,74.6122&z=15&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ГАЛЕРЕЯ
+       ============================================================ -->
+  <section class="gallery" id="gallery">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Любимые моменты</span>
+      <h2 class="section-header__title">Галерея</h2>
+      <p class="section-header__subtitle">Несколько кадров нашей истории — до самого главного дня.</p>
+    </div>
+
+    <div class="gallery__grid" id="galleryGrid">
+      <button class="gallery__item gallery__item--tall reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 1">
+        <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800&auto=format&fit=crop" alt="Пара на закате" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+      <button class="gallery__item reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 2">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop" alt="Романтический портрет" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+      <button class="gallery__item reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 3">
+        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=800&auto=format&fit=crop" alt="Момент предложения" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+      <button class="gallery__item gallery__item--wide reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 4">
+        <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1000&auto=format&fit=crop" alt="Путешествие вместе" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+      <button class="gallery__item reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 5">
+        <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=800&auto=format&fit=crop" alt="Свадебные детали" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+      <button class="gallery__item gallery__item--tall reveal-on-scroll" data-reveal-block data-full="https://images.unsplash.com/photo-1529636798458-92182e662485?q=80&w=1400&auto=format&fit=crop" aria-label="Открыть фото 6">
+        <img src="https://images.unsplash.com/photo-1529636798458-92182e662485?q=80&w=800&auto=format&fit=crop" alt="Букет невесты" loading="lazy">
+        <span class="gallery__overlay"><span class="gallery__zoom">+</span></span>
+      </button>
+    </div>
+
+    <p class="gallery__qr-hint reveal-on-scroll" data-reveal-block>
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.5"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v-1" stroke="currentColor" stroke-width="1.5"/></svg>
+      После свадьбы отсканируйте QR-код на входе, чтобы загрузить свои фотографии в общий альбом
+    </p>
+  </section>
+
+  <div class="divider divider--wave-2" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,0 480,80 720,48 C960,16 1200,64 1440,40 L1440,0 L0,0 Z" fill="var(--color-cream)"/></svg></div>
+
+  <!-- ============================================================
+       ЛЮБИМАЯ ПЕСНЯ — МУЗЫКАЛЬНЫЙ ПЛЕЕР
+       ============================================================ -->
+  <section class="song reveal-on-scroll" data-reveal-block>
+    <div class="song__card glass-card">
+      <div class="song__art">
+        <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="url(#vinylGrad)"/><circle cx="50" cy="50" r="18" fill="var(--color-cream)"/><circle cx="50" cy="50" r="4" fill="var(--color-gold-deep)"/><defs><radialGradient id="vinylGrad"><stop offset="0.4" stop-color="#3A2E28"/><stop offset="1" stop-color="#1E1712"/></radialGradient></defs></svg>
+      </div>
+      <div class="song__info">
+        <span class="section-header__eyebrow">Наша песня</span>
+        <h3 class="song__title">Perfect</h3>
+        <p class="song__artist">Ed Sheeran</p>
+        <p class="song__text">Песня, под которую мы танцевали на первом свидании — и обязательно станцуем ещё раз в день свадьбы.</p>
+        <div class="song__player">
+          <button class="song__play-btn" id="songPlayBtn" aria-label="Воспроизвести отрывок">
+            <svg class="song__play-icon" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            <svg class="song__pause-icon" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <div class="song__progress"><span class="song__progress-fill" id="songProgressFill"></span></div>
+          <span class="song__time" id="songTime">0:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       КАРТА ПУТЕШЕСТВИЙ
+       ============================================================ -->
+  <section class="travel-map reveal-on-scroll" data-reveal-block>
+    <div class="section-header">
+      <span class="section-header__eyebrow">Вместе по миру</span>
+      <h2 class="section-header__title">Карта наших путешествий</h2>
+      <p class="section-header__subtitle">Города и страны, которые стали частью нашей истории.</p>
+    </div>
+    <div class="travel-map__visual">
+      <svg viewBox="0 0 800 400" class="travel-map__svg" aria-hidden="true">
+        <path d="M60 250 Q150 150 250 200 Q350 130 420 180 Q500 100 600 160 Q680 120 740 190" stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="6 8" fill="none" class="travel-map__path"/>
+        <circle cx="60" cy="250" r="6" fill="var(--color-rose)" class="travel-map__pin"/>
+        <circle cx="250" cy="200" r="6" fill="var(--color-rose)" class="travel-map__pin"/>
+        <circle cx="420" cy="180" r="6" fill="var(--color-rose)" class="travel-map__pin"/>
+        <circle cx="600" cy="160" r="6" fill="var(--color-rose)" class="travel-map__pin"/>
+        <circle cx="740" cy="190" r="7" fill="var(--color-gold-deep)" class="travel-map__pin travel-map__pin--home"/>
+      </svg>
+      <div class="travel-map__labels">
+        <span class="travel-map__label" style="--x:7%; --y:66%">Бишкек — начало</span>
+        <span class="travel-map__label" style="--x:30%; --y:53%">Стамбул</span>
+        <span class="travel-map__label" style="--x:51%; --y:48%">Тбилиси</span>
+        <span class="travel-map__label" style="--x:73%; --y:43%">Париж</span>
+        <span class="travel-map__label" style="--x:90%; --y:50%">Бишкек — дом</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider divider--wave-1" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,32 C960,64 1200,16 1440,40 L1440,80 L0,80 Z" fill="var(--color-surface)"/></svg></div>
+
+  <!-- ============================================================
+       РОДИТЕЛИ И СВИДЕТЕЛИ
+       ============================================================ -->
+  <section class="people" id="people">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">С благодарностью</span>
+      <h2 class="section-header__title">Наши близкие</h2>
+    </div>
+
+    <div class="people__group reveal-on-scroll" data-reveal-block>
+      <h3 class="people__group-title">Родители</h3>
+      <div class="people__grid">
+        <div class="people__card">
+          <span class="people__role">Родители жениха</span>
+          <p class="people__names">Сергей Петрович<br>и Марина Викторовна</p>
+        </div>
+        <div class="people__card">
+          <span class="people__role">Родители невесты</span>
+          <p class="people__names">Игорь Дмитриевич<br>и Ольга Николаевна</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="people__group reveal-on-scroll" data-reveal-block>
+      <h3 class="people__group-title">Свидетели</h3>
+      <div class="people__grid">
+        <div class="people__card">
+          <span class="people__role">Свидетель</span>
+          <p class="people__names">Дмитрий Соколов</p>
+        </div>
+        <div class="people__card">
+          <span class="people__role">Свидетельница</span>
+          <p class="people__names">Анастасия Волкова</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ОБРАЩЕНИЕ ЖЕНИХА И НЕВЕСТЫ
+       ============================================================ -->
+  <section class="letter reveal-on-scroll" data-reveal-block>
+    <div class="letter__card glass-card">
+      <svg class="letter__quote-mark" viewBox="0 0 60 44" aria-hidden="true"><path d="M0 24C0 10 9 0 22 0V8C14 8 9 13 9 21H22V44H0V24ZM33 24C33 10 42 0 55 0V8C47 8 42 13 42 21H55V44H33V24Z" fill="var(--color-gold)"/></svg>
+      <p class="letter__text">
+        Дорогие наши родные и друзья! Каждый из вас был частью пути, который привёл нас к этому дню.
+        Спасибо, что верили в нас, поддерживали в трудные моменты и радовались вместе с нами в счастливые.
+        Мы не представляем этот день без вас — вашего смеха, объятий и тёплых слов. Пусть этот вечер
+        станет таким же особенным для вас, каким он будет для нас.
+      </p>
+      <p class="letter__signature">С любовью и благодарностью,<br><span class="letter__signature-names">Александр и Екатерина</span></p>
+    </div>
+  </section>
+
+  <div class="divider divider--wave-2" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,0 480,80 720,48 C960,16 1200,64 1440,40 L1440,0 L0,0 Z" fill="var(--color-cream)"/></svg></div>
+
+  <!-- ============================================================
+       DRESS CODE
+       ============================================================ -->
+  <section class="dresscode" id="dresscode">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Что надеть</span>
+      <h2 class="section-header__title">Дресс-код</h2>
+      <p class="section-header__subtitle">Мы будем благодарны, если вы поддержите нашу палитру — тёплые, благородные оттенки вечера.</p>
+    </div>
+
+    <div class="dresscode__palette reveal-on-scroll" data-reveal-block>
+      <div class="dresscode__swatch" style="--swatch-color:#F5EFE6"><span class="dresscode__swatch-name">Молочный</span></div>
+      <div class="dresscode__swatch" style="--swatch-color:#E8C4C4"><span class="dresscode__swatch-name">Пыльная роза</span></div>
+      <div class="dresscode__swatch" style="--swatch-color:#C9A876"><span class="dresscode__swatch-name">Шампань</span></div>
+      <div class="dresscode__swatch" style="--swatch-color:#B4A5A0"><span class="dresscode__swatch-name">Какао</span></div>
+      <div class="dresscode__swatch" style="--swatch-color:#7A6C63"><span class="dresscode__swatch-name">Тёмный шоколад</span></div>
+    </div>
+
+    <div class="dresscode__grid">
+      <article class="dresscode__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="dresscode__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3l4 3 4-3 3 6-3 2v10H5V11L2 9l3-6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+        <h3 class="dresscode__title">Для дам</h3>
+        <p class="dresscode__text">Вечерние платья длины миди или макси в тёплых тонах палитры. Избегайте белого и слишком ярких цветов.</p>
+      </article>
+      <article class="dresscode__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="dresscode__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h12l-2 4H8L6 3ZM8 7v14M16 7v14M8 7c0 3-2 4-2 4M16 7c0 3 2 4 2 4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3 class="dresscode__title">Для мужчин</h3>
+        <p class="dresscode__text">Классический костюм — тёмно-синий, графитовый или бежевый. Галстук или бабочка приветствуются.</p>
+      </article>
+      <article class="dresscode__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="dresscode__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M6 8c0 3 3 4 6 4s6-1 6-4M6 16c0 3 3 4 6 4s6-1 6-4" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3 class="dresscode__title">Уровень нарядности</h3>
+        <p class="dresscode__text">Формальный вечерний стиль. Церемония проходит на улице — учтите обувь для газона.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЧТО ВАЖНО ЗНАТЬ ГОСТЯМ
+       ============================================================ -->
+  <section class="info-blocks">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Полезно знать</span>
+      <h2 class="section-header__title">Что важно знать гостям</h2>
+    </div>
+
+    <div class="info-blocks__grid">
+      <article class="info-blocks__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="info-blocks__icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="15" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M18 10h2.2a1 1 0 011 1.3l-1.2 3.2" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="18" r="1.6" fill="currentColor"/><circle cx="15" cy="18" r="1.6" fill="currentColor"/></svg></div>
+        <h3>Парковка</h3>
+        <p>Бесплатная охраняемая парковка на территории Royal Palace, вместимость свыше 100 машин.</p>
+      </article>
+      <article class="info-blocks__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="info-blocks__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 21V9l8-6 8 6v12" stroke="currentColor" stroke-width="1.5"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <h3>Отели рядом</h3>
+        <p>Hyatt Regency (5 мин), Plaza Hotel (10 мин). Упомяните имя пары для специального тарифа.</p>
+      </article>
+      <article class="info-blocks__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="info-blocks__icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg></div>
+        <h3>Дети на свадьбе</h3>
+        <p>Мы будем рады видеть ваших детей! Для самых маленьких организована уютная зона с аниматором.</p>
+      </article>
+      <article class="info-blocks__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="info-blocks__icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 12l4-4M4 12l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Церемония на улице</h3>
+        <p>Церемония проходит в саду. При прохладной погоде организованы пледы и обогреватели.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="divider divider--wave-1" aria-hidden="true"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,32 C960,64 1200,16 1440,40 L1440,80 L0,80 Z" fill="var(--color-surface)"/></svg></div>
+
+  <!-- ============================================================
+       ПОДАРКИ / WISHLIST
+       ============================================================ -->
+  <section class="gifts" id="gifts">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">От всего сердца</span>
+      <h2 class="section-header__title">Подарки</h2>
+    </div>
+
+    <p class="gifts__message reveal-on-scroll" data-reveal-block>
+      Ваше присутствие — лучший подарок, но если вы захотите сделать нам подарок,
+      будем рады вашему вкладу в наше свадебное путешествие.
+    </p>
+
+    <div class="gifts__grid">
+      <div class="gifts__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="gifts__qr">
+          <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="120" fill="#fff"/>
+            <g fill="#3A2E28">
+              <rect x="8" y="8" width="28" height="28"/><rect x="14" y="14" width="16" height="16" fill="#fff"/><rect x="19" y="19" width="6" height="6"/>
+              <rect x="84" y="8" width="28" height="28"/><rect x="90" y="14" width="16" height="16" fill="#fff"/><rect x="95" y="19" width="6" height="6"/>
+              <rect x="8" y="84" width="28" height="28"/><rect x="14" y="90" width="16" height="16" fill="#fff"/><rect x="19" y="95" width="6" height="6"/>
+              <rect x="44" y="8" width="6" height="6"/><rect x="56" y="8" width="6" height="6"/><rect x="68" y="14" width="6" height="6"/>
+              <rect x="44" y="20" width="6" height="6"/><rect x="60" y="20" width="6" height="6"/>
+              <rect x="50" y="32" width="6" height="6"/><rect x="62" y="32" width="6" height="6"/><rect x="74" y="32" width="6" height="6"/>
+              <rect x="44" y="44" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/><rect x="68" y="44" width="6" height="6"/><rect x="80" y="44" width="6" height="6"/>
+              <rect x="8" y="50" width="6" height="6"/><rect x="20" y="50" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
+              <rect x="44" y="56" width="6" height="6"/><rect x="60" y="56" width="6" height="6"/><rect x="74" y="56" width="6" height="6"/>
+              <rect x="8" y="68" width="6" height="6"/><rect x="24" y="68" width="6" height="6"/><rect x="44" y="68" width="6" height="6"/><rect x="56" y="68" width="6" height="6"/><rect x="68" y="68" width="6" height="6"/><rect x="86" y="68" width="6" height="6"/><rect x="100" y="68" width="6" height="6"/>
+              <rect x="44" y="80" width="6" height="6"/><rect x="62" y="80" width="6" height="6"/><rect x="74" y="86" width="6" height="6"/><rect x="86" y="86" width="6" height="6"/>
+              <rect x="44" y="92" width="6" height="6"/><rect x="56" y="98" width="6" height="6"/><rect x="68" y="98" width="6" height="6"/><rect x="80" y="104" width="6" height="6"/><rect x="92" y="104" width="6" height="6"/><rect x="104" y="92" width="6" height="6"/>
+            </g>
+          </svg>
+        </div>
+        <h3 class="gifts__card-title">Перевод на путешествие</h3>
+        <p class="gifts__requisites">Karta: **** **** **** 4471<br>Получатель: Александр С.</p>
+        <button class="btn btn--ghost gifts__copy-btn" id="copyRequisites" data-magnetic>
+          <span>Скопировать реквизиты</span>
+        </button>
+      </div>
+
+      <div class="gifts__card glass-card reveal-on-scroll" data-reveal-block>
+        <div class="gifts__wishlist-icon"><svg viewBox="0 0 24 24" fill="none" width="48" height="48"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.5 3 12 4.5 12 4.5C12 4.5 13.5 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
+        <h3 class="gifts__card-title">Wishlist для дома</h3>
+        <p class="gifts__requisites">Список вещей, которые помогут нам обустроить наш первый общий дом.</p>
+        <button class="btn btn--ghost" data-magnetic>
+          <span>Смотреть список</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       RSVP ФОРМА
+       ============================================================ -->
+  <section class="rsvp" id="rsvp">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Ждём вашего ответа</span>
+      <h2 class="section-header__title">Подтверждение визита</h2>
+      <p class="section-header__subtitle">Пожалуйста, ответьте до 1 июля 2027 года — это поможет нам всё подготовить.</p>
+    </div>
+
+    <form class="rsvp__form glass-card reveal-on-scroll" id="rsvpForm" data-reveal-block novalidate>
+      <div class="rsvp__field">
+        <label for="rsvpName">Ваше имя и фамилия</label>
+        <input type="text" id="rsvpName" name="name" placeholder="Иван Иванов" required autocomplete="name">
+        <span class="rsvp__error" data-error-for="rsvpName">Пожалуйста, укажите имя</span>
+      </div>
+
+      <div class="rsvp__field">
+        <label for="rsvpPhone">Номер телефона</label>
+        <input type="tel" id="rsvpPhone" name="phone" placeholder="+996 700 000 000" required autocomplete="tel">
+        <span class="rsvp__error" data-error-for="rsvpPhone">Укажите корректный номер телефона</span>
+      </div>
+
+      <div class="rsvp__field">
+        <label for="rsvpGuests">Количество гостей</label>
+        <select id="rsvpGuests" name="guests" required>
+          <option value="" disabled selected>Выберите количество</option>
+          <option value="1">1 гость</option>
+          <option value="2">2 гостя</option>
+          <option value="3">3 гостя</option>
+          <option value="4">4 гостя</option>
+        </select>
+      </div>
+
+      <fieldset class="rsvp__field rsvp__field--radio">
+        <legend>Будете присутствовать?</legend>
+        <div class="rsvp__radio-group">
+          <label class="rsvp__radio">
+            <input type="radio" name="attending" value="yes" checked>
+            <span class="rsvp__radio-mark"></span>
+            <span>С радостью придём</span>
+          </label>
+          <label class="rsvp__radio">
+            <input type="radio" name="attending" value="no">
+            <span class="rsvp__radio-mark"></span>
+            <span>К сожалению, не сможем</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="rsvp__field">
+        <label for="rsvpComment">Комментарий или пожелание по меню</label>
+        <textarea id="rsvpComment" name="comment" rows="3" placeholder="Например: вегетарианское меню, детский стул и т.д."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn--primary rsvp__submit" data-magnetic>
+        <span class="btn__label">Отправить ответ</span>
+        <span class="btn__shine" aria-hidden="true"></span>
+      </button>
+    </form>
+
+    <!-- Экран успешной отправки -->
+    <div class="rsvp__success" id="rsvpSuccess" aria-live="polite">
+      <svg class="rsvp__success-icon" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="38" stroke="url(#successGrad)" stroke-width="2"/>
+        <path class="rsvp__success-check" d="M24 41l11 11 21-23" stroke="url(#successGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="successGrad" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#E8D4A8"/><stop offset="1" stop-color="#C9A876"/></linearGradient></defs>
+      </svg>
+      <h3 class="rsvp__success-title">Спасибо за ответ!</h3>
+      <p class="rsvp__success-text">Мы получили ваше подтверждение и очень ждём встречи с вами на нашем празднике.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FAQ
+       ============================================================ -->
+  <section class="faq" id="faq">
+    <div class="section-header reveal-on-scroll" data-reveal-block>
+      <span class="section-header__eyebrow">Ответы рядом</span>
+      <h2 class="section-header__title">Частые вопросы</h2>
+    </div>
+
+    <div class="faq__list">
+      <div class="faq__item glass-card reveal-on-scroll" data-reveal-block>
+        <button class="faq__question" aria-expanded="false">
+          <span>Можно ли прийти с ребёнком?</span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer"><p>Конечно! Мы будем рады видеть ваших детей. Для самых маленьких гостей организована отдельная зона с аниматором.</p></div>
+      </div>
+      <div class="faq__item glass-card reveal-on-scroll" data-reveal-block>
+        <button class="faq__question" aria-expanded="false">
+          <span>Можно ли прийти с партнёром, если в приглашении указано одно имя?</span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer"><p>Пожалуйста, напишите нам напрямую — мы с радостью обсудим количество гостей индивидуально в форме RSVP.</p></div>
+      </div>
+      <div class="faq__item glass-card reveal-on-scroll" data-reveal-block>
+        <button class="faq__question" aria-expanded="false">
+          <span>Какой дресс-код на церемонии?</span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer"><p>Формальный вечерний стиль в тёплой палитре — молочный, шампань, пыльная роза, какао. Подробности — в разделе «Дресс-код».</p></div>
+      </div>
+      <div class="faq__item glass-card reveal-on-scroll" data-reveal-block>
+        <button class="faq__question" aria-expanded="false">
+          <span>Будет ли трансфер до места проведения?</span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer"><p>Организована бесплатная парковка на территории. При необходимости трансфера — сообщите нам в комментарии RSVP.</p></div>
+      </div>
+      <div class="faq__item glass-card reveal-on-scroll" data-reveal-block>
+        <button class="faq__question" aria-expanded="false">
+          <span>До какого числа нужно подтвердить присутствие?</span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer"><p>Будем благодарны за ответ до 1 июля 2027 года — это поможет нам точно спланировать банкет.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЗАВЕРШЕНИЕ ВЕЧЕРА
+       ============================================================ -->
+  <section class="closing reveal-on-scroll" data-reveal-block>
+    <div class="closing__ornament" aria-hidden="true">
+      <svg viewBox="0 0 200 60" fill="none"><path d="M2 30 C50 5 60 55 100 30 C140 5 150 55 198 30" stroke="url(#closingLineGrad)" stroke-width="1"/><defs><linearGradient id="closingLineGrad" x1="0" y1="0" x2="200" y2="0"><stop offset="0" stop-color="#C9A876" stop-opacity="0"/><stop offset="0.5" stop-color="#C9A876"/><stop offset="1" stop-color="#C9A876" stop-opacity="0"/></linearGradient></defs></svg>
+    </div>
+    <p class="closing__eyebrow">До скорой встречи</p>
+    <h2 class="closing__title">Ждём вас с открытым сердцем<br>15 августа 2027 года</h2>
+    <p class="closing__text">И пусть этот вечер останется в памяти каждого из нас — тёплым, лёгким и невероятно счастливым.</p>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="footer__monogram">
+    <svg viewBox="0 0 120 60" fill="none"><text x="60" y="46" text-anchor="middle" font-family="'Great Vibes', cursive" font-size="42" fill="url(#footerGrad)">A &amp; E</text><defs><linearGradient id="footerGrad" x1="0" y1="0" x2="120" y2="60"><stop stop-color="#E8D4A8"/><stop offset="1" stop-color="#C9A876"/></linearGradient></defs></svg>
+  </div>
+  <p class="footer__thanks">Спасибо, что разделите этот особенный день вместе с нами ❤️</p>
+  <p class="footer__date">15 августа 2027 · Royal Palace · Бишкек</p>
+  <div class="footer__line" aria-hidden="true"></div>
+  <p class="footer__signature">С любовью, Александр и Екатерина</p>
+</footer>
+
+<!-- Кнопка "Наверх" -->
+<button class="scroll-top" id="scrollTop" aria-label="Прокрутить наверх">
+  <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- ============================================================
+     LIGHTBOX (модальное окно для галереи)
+     ============================================================ -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox__close" id="lightboxClose" aria-label="Закрыть">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <img class="lightbox__image" id="lightboxImage" src="" alt="Увеличенное фото">
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
